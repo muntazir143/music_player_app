@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:music_player_app/core/theme/app_pallete.dart';
+import 'package:music_player_app/features/auth/repositories/auth_remote_repository.dart';
 import 'package:music_player_app/features/auth/view/widgets/auth_gradient_button.dart';
 import 'package:music_player_app/features/auth/view/widgets/custom_field.dart';
 
@@ -71,7 +73,17 @@ class _SignupPageState extends State<SignupPage> {
               ),
               AuthGradientButton(
                 text: "Sign Up",
-                onPressed: () {},
+                onPressed: () async {
+                  final res = await AuthRemoteRepository().signup(
+                      name: nameController.text,
+                      email: emailController.text,
+                      password: passwordController.text);
+
+                  final val = switch (res) {
+                    Left(value: final l) => l,
+                    Right(value: final r) => r.toString(),
+                  };
+                },
               ),
               const SizedBox(
                 height: 20,

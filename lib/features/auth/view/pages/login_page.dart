@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:music_player_app/core/theme/app_pallete.dart';
+import 'package:music_player_app/features/auth/repositories/auth_remote_repository.dart';
 import 'package:music_player_app/features/auth/view/widgets/auth_gradient_button.dart';
 import 'package:music_player_app/features/auth/view/widgets/custom_field.dart';
 
@@ -62,24 +65,36 @@ class _LoginPageState extends State<LoginPage> {
               ),
               AuthGradientButton(
                 text: "Sign In",
-                onPressed: () {},
+                onPressed: () async {
+                  final res = await AuthRemoteRepository().login(
+                      email: emailController.text,
+                      password: passwordController.text);
+
+                  final val = switch (res) {
+                    Left(value: final l) => l,
+                    Right(value: final r) => r.toString(),
+                  };
+                },
               ),
               const SizedBox(
                 height: 20,
               ),
-              RichText(
-                text: TextSpan(
-                  text: "Don't have an account? ",
-                  style: Theme.of(context).textTheme.titleMedium,
-                  children: const [
-                    TextSpan(
-                      text: "Sign Up",
-                      style: TextStyle(
-                        color: Pallete.gradient2,
-                        fontWeight: FontWeight.bold,
+              GestureDetector(
+                onTap: () {},
+                child: RichText(
+                  text: TextSpan(
+                    text: "Don't have an account? ",
+                    style: Theme.of(context).textTheme.titleMedium,
+                    children: const [
+                      TextSpan(
+                        text: "Sign Up",
+                        style: TextStyle(
+                          color: Pallete.gradient2,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ],
