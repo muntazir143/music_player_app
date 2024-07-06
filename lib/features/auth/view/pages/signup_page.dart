@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:music_player_app/core/theme/app_pallete.dart';
 import 'package:music_player_app/core/utils.dart';
 import 'package:music_player_app/core/widgets/loader.dart';
 import 'package:music_player_app/features/auth/view/pages/login_page.dart';
 import 'package:music_player_app/features/auth/view/widgets/auth_gradient_button.dart';
-import 'package:music_player_app/features/auth/view/widgets/custom_field.dart';
+import 'package:music_player_app/core/widgets/custom_field.dart';
 import 'package:music_player_app/features/auth/viewmodel/auth_viewmodel.dart';
 
 class SignupPage extends ConsumerStatefulWidget {
@@ -31,7 +32,8 @@ class _SignupPageState extends ConsumerState<SignupPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = ref.watch(authViewModelProvider)?.isLoading == true;
+    final isLoading = ref.watch(
+        authViewModelProvider.select((value) => value?.isLoading == true));
 
     ref.listen(authViewModelProvider, (_, next) {
       next?.when(
@@ -110,19 +112,28 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                     const SizedBox(
                       height: 20,
                     ),
-                    RichText(
-                      text: TextSpan(
-                        text: "Already have an account? ",
-                        style: Theme.of(context).textTheme.titleMedium,
-                        children: const [
-                          TextSpan(
-                            text: "Sign In",
-                            style: TextStyle(
-                              color: Pallete.gradient2,
-                              fontWeight: FontWeight.bold,
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const LoginPage()),
+                        );
+                      },
+                      child: RichText(
+                        text: TextSpan(
+                          text: "Already have an account? ",
+                          style: Theme.of(context).textTheme.titleMedium,
+                          children: const [
+                            TextSpan(
+                              text: "Sign In",
+                              style: TextStyle(
+                                color: Pallete.gradient2,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ],

@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fpdart/fpdart.dart';
 import 'package:music_player_app/core/theme/app_pallete.dart';
 import 'package:music_player_app/core/utils.dart';
 import 'package:music_player_app/core/widgets/loader.dart';
-import 'package:music_player_app/features/auth/repositories/auth_remote_repository.dart';
 import 'package:music_player_app/features/auth/view/widgets/auth_gradient_button.dart';
-import 'package:music_player_app/features/auth/view/widgets/custom_field.dart';
+import 'package:music_player_app/core/widgets/custom_field.dart';
 import 'package:music_player_app/features/auth/viewmodel/auth_viewmodel.dart';
+import 'package:music_player_app/features/home/view/pages/home_page.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -30,16 +29,17 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = ref.watch(authViewModelProvider)?.isLoading == true;
+    final isLoading = ref.watch(
+        authViewModelProvider.select((value) => value?.isLoading == true));
 
     ref.listen(authViewModelProvider, (_, next) {
       next?.when(
         data: (data) {
-          // TODO: navigate to home page
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(builder: (context) => const LoginPage()),
-          // );
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const HomePage()),
+            (_) => false,
+          );
         },
         error: (error, st) {
           showSnackBar(context, error.toString());
@@ -89,14 +89,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     AuthGradientButton(
                       text: "Sign In",
                       onPressed: () async {
-                        final res = await AuthRemoteRepository().login(
-                            email: emailController.text,
-                            password: passwordController.text);
-
-                        final val = switch (res) {
-                          Left(value: final l) => l,
-                          Right(value: final r) => r.toString(),
-                        };
+                        if (formKey.currentState!.validate()) {
+                          await ref
+                              .read(authViewModelProvider.notifier)
+                              .loginUser(
+                                  email: emailController.text,
+                                  password: passwordController.text);
+                        }
                       },
                     ),
                     const SizedBox(
