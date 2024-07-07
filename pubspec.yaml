@@ -39,6 +39,8 @@ dependencies:
   flutter_riverpod: ^2.5.1
   riverpod_annotation: ^2.3.5
   shared_preferences: ^2.2.3
+  flex_color_picker: ^3.5.1
+  file_picker: ^8.0.6
 
 dev_dependencies:
   flutter_test:
