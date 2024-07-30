@@ -11,6 +11,7 @@ class MusicSlab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentSong = ref.watch(currentSongNotifierProvider);
+    final songNotifier = ref.read(currentSongNotifierProvider.notifier);
     if (currentSong == null) {
       return const SizedBox();
     }
@@ -76,9 +77,11 @@ class MusicSlab extends ConsumerWidget {
                     ),
                   ),
                   IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      CupertinoIcons.play_fill,
+                    onPressed: songNotifier.playPause,
+                    icon: Icon(
+                      songNotifier.isPlaying
+                          ? CupertinoIcons.pause_fill
+                          : CupertinoIcons.play_fill,
                       color: Pallete.whiteColor,
                     ),
                   ),
@@ -87,15 +90,31 @@ class MusicSlab extends ConsumerWidget {
             ],
           ),
         ),
-        Positioned(
-          bottom: 0,
-          child: Container(
-            height: 2,
-            width: 20,
-            decoration: const BoxDecoration(
-              color: Pallete.whiteColor,
-            ),
-          ),
+        StreamBuilder(
+          stream: songNotifier.audioPlayer?.positionStream,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const SizedBox();
+            }
+            final position = snapshot.data;
+            final duration = songNotifier.audioPlayer!.duration;
+            double sliderValue = 0.0;
+
+            if (position != null && duration != null) {
+              sliderValue = position.inMilliseconds / duration.inMilliseconds;
+            }
+
+            return Positioned(
+              bottom: 0,
+              child: Container(
+                height: 2,
+                width: sliderValue * MediaQuery.of(context).size.width,
+                decoration: const BoxDecoration(
+                  color: Pallete.whiteColor,
+                ),
+              ),
+            );
+          },
         ),
         Positioned(
           bottom: 0,
